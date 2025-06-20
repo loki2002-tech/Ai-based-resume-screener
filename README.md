@@ -1,67 +1,42 @@
-# 🤖 AI-Based Resume Screening Tool
+# 🤖 AI Resume Screening Tool (Gemini-Powered)
 
-A smart resume screening web application that uses **NLP** and **OpenAI's GPT** to analyze a resume against a job description. It provides a **match score** and **AI-generated feedback** to help job seekers optimize their resumes.
-
-Built using:
-- Python
-- Streamlit
-- spaCy
-- OpenAI GPT-3.5
-- Scikit-learn
-- PyPDF2
+An intelligent web app that analyzes resumes against job descriptions using **NLP and Google's Gemini AI**. It calculates a **match score** using text similarity and provides **AI-generated feedback** to help job seekers optimize their resumes for specific job roles.
 
 ---
 
 ## 🚀 Features
 
-✅ Upload a resume in PDF format  
-✅ Paste any job description  
-✅ Calculate a **match score** using TF-IDF + cosine similarity  
-✅ Generate **GPT-powered feedback** to improve your resume  
-✅ View extracted resume text for transparency  
+✅ Upload resume (PDF) and paste job description  
+✅ Clean and preprocess text using spaCy  
+✅ Generate match score using TF-IDF + cosine similarity  
+✅ Get AI-based feedback using **Gemini (Google AI)**  
+✅ Simple, clean UI built with **Streamlit**
 
 ---
 
 ## 🧰 Tech Stack
 
-| Tool        | Purpose                        |
-|-------------|--------------------------------|
-| Streamlit   | Frontend UI                    |
-| spaCy       | NLP for tokenization & lemmatization |
-| OpenAI API  | GPT-based feedback generator   |
-| PyPDF2      | Resume text extraction         |
-| Scikit-learn| Text similarity (TF-IDF + Cosine) |
+| Technology          | Purpose                                  |
+|---------------------|-------------------------------------------|
+| Python              | Core programming language                |
+| Streamlit           | Web interface                            |
+| spaCy               | NLP for text preprocessing               |
+| scikit-learn        | TF-IDF vectorization + cosine similarity |
+| PyPDF2              | Extract text from resume PDFs            |
+| Google Generative AI (`gemini-pro`) | Generate AI feedback using Gemini API |
 
 ---
-
-## 🖥️ Demo
-
-> 📌 _Coming soon_ – You can deploy this using [Streamlit Cloud](https://streamlit.io/cloud)
-
----
-🔐 OpenAI API Key
-This project uses the OpenAI API for GPT-based suggestions.
-Get your API key here: https://platform.openai.com/account/api-keys
-
-Paste the key inside the app when prompted.
-Future Improvements
-✅ Highlight missing keywords in resume
-
-✅ Option to download GPT feedback as PDF
-
-🌐 Deploy to Streamlit Cloud
-
-🔍 Detect specific skill gaps
-
 
 ## 🧪 How to Run Locally
 
-### 1. Clone the repo
+### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/resume-screening-tool.git
-cd resume-screening-tool
-2. Install dependencies
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-3. Run the app
-streamlit run app.py
+git clone https://github.com/yourusername/resume-screening-tool-gemini.git
+cd resume-screening-tool-gemini
+
+### ⚙️ Step 2: Run the App
+
+Make sure you're in the project folder (where `app.py` is located), then run the following command:
+
+```bash
+python -m streamlit run app.py
