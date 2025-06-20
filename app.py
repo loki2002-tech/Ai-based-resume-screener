@@ -3,15 +3,15 @@ import PyPDF2
 import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import openai
+import google.generativeai as genai
 
-# ----------------- CONFIGURATION ------------------
-st.set_page_config(page_title="AI Resume Matcher", layout="centered")
+# Set page config
+st.set_page_config(page_title="AI Resume Screening Tool", layout="centered")
 
 # Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
-# ----------------- FUNCTIONS -----------------------
+# -------------------- Functions ------------------------
 
 def extract_text_from_pdf(file):
     reader = PyPDF2.PdfReader(file)
@@ -30,12 +30,12 @@ def get_similarity(resume_text, job_desc_text):
     vectors = vectorizer.fit_transform([resume_text, job_desc_text])
     return cosine_similarity(vectors[0:1], vectors[1:2])[0][0] * 100
 
-def generate_resume_feedback(resume_text, job_desc_text):
+def generate_resume_feedback(resume_text, job_desc_text, gemini_api_key):
     prompt = f"""
-You are a helpful career assistant. Given the following RESUME and JOB DESCRIPTION, evaluate how well the resume matches the job. Provide feedback on:
+You are a helpful career assistant. Based on the RESUME and JOB DESCRIPTION below, give feedback on:
+- Resume-job alignment
 - Missing skills or keywords
-- Tone/professionalism
-- Suggestions to improve alignment with the job
+- Suggestions to improve tone or content
 
 RESUME:
 {resume_text}
@@ -43,39 +43,31 @@ RESUME:
 JOB DESCRIPTION:
 {job_desc_text}
 
-Provide a short, actionable feedback paragraph:
+Provide short, actionable suggestions:
 """
-
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=300,
-        )
-        return response['choices'][0]['message']['content']
+        genai.configure(api_key=gemini_api_key)
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content(prompt)
+        return response.text.strip()
     except Exception as e:
         return f"Error generating feedback: {str(e)}"
 
-# ----------------- UI -----------------------------
+# -------------------- UI ------------------------
 
-st.title("🤖 AI-Based Resume Screening Tool")
-st.markdown("Upload a resume and paste a job description to see how well they match!")
+st.title("🤖 AI Resume Screening Tool")
+st.markdown("Upload a resume PDF and paste a job description to evaluate match and get feedback.")
 
-# Optional API Key input
-api_key_input = st.text_input("🔑 Enter OpenAI API Key", type="password")
-if api_key_input:
-    openai.api_key = api_key_input
-else:
-    st.warning("Please enter your OpenAI API key to enable GPT-based suggestions.")
+# Gemini API Key input
+gemini_api_key = st.text_input("🔑 Enter Gemini API Key (from https://aistudio.google.com/app/apikey)", type="password")
 
 # Upload resume and job description
 resume_file = st.file_uploader("📄 Upload Resume (PDF format only)", type=["pdf"])
 job_description = st.text_area("📝 Paste Job Description Here")
 
-# Main processing
-if resume_file and job_description and api_key_input:
-    with st.spinner("Reading resume..."):
+# Main Logic
+if resume_file and job_description:
+    with st.spinner("Reading and processing resume..."):
         raw_resume_text = extract_text_from_pdf(resume_file)
         clean_resume_text = get_cleaned_text(raw_resume_text)
         clean_job_desc = get_cleaned_text(job_description)
@@ -86,18 +78,22 @@ if resume_file and job_description and api_key_input:
     st.metric(label="Match Score", value=f"{score:.2f}%")
 
     if score >= 75:
-        st.success("✅ Excellent match! Ready to apply.")
+        st.success("✅ Excellent match! Your resume aligns well with the job.")
     elif score >= 50:
-        st.warning("⚠️ Moderate match. Consider tweaking your resume.")
+        st.warning("⚠️ Moderate match. Consider updating your resume for better alignment.")
     else:
-        st.error("❌ Low match. Update your resume to better align with the job description.")
+        st.error("❌ Low match. Resume needs improvements to match this job.")
 
-    with st.spinner("🧠 Generating AI-based feedback..."):
-        feedback = generate_resume_feedback(raw_resume_text, job_description)
+    if gemini_api_key:
+        with st.spinner("🧠 Generating AI-based feedback using Gemini..."):
+            feedback = generate_resume_feedback(raw_resume_text, job_description, gemini_api_key)
+    else:
+        feedback = "⚠️ Please enter a valid Gemini API key to get feedback."
 
-    st.subheader("💡 GPT-Based Suggestions")
+    st.subheader("💡 Gemini AI Suggestions")
     st.info(feedback)
 
     st.markdown("---")
     st.subheader("📄 Extracted Resume Text")
     st.text_area("Resume Content", raw_resume_text, height=200)
+
