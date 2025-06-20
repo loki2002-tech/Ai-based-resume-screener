@@ -39,6 +39,20 @@ Built using:
 > 📌 _Coming soon_ – You can deploy this using [Streamlit Cloud](https://streamlit.io/cloud)
 
 ---
+🔐 OpenAI API Key
+This project uses the OpenAI API for GPT-based suggestions.
+Get your API key here: https://platform.openai.com/account/api-keys
+
+Paste the key inside the app when prompted.
+Future Improvements
+✅ Highlight missing keywords in resume
+
+✅ Option to download GPT feedback as PDF
+
+🌐 Deploy to Streamlit Cloud
+
+🔍 Detect specific skill gaps
+
 
 ## 🧪 How to Run Locally
 
@@ -51,4 +65,3 @@ pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 3. Run the app
 streamlit run app.py
-
